@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Career Finder | AffiliateMediaHub-Studio</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .hero-pattern {
+            background-color: #f8fafc;
+            background-image: radial-gradient(circle at 1px 1px, rgba(59, 130, 246, 0.1) 1px, transparent 0);
+            background-size: 20px 20px;
+        }
+        .gradient-text {
+            background: linear-gradient(135deg, #3b82f6 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        .card-hover { transition: transform 0.3s ease, box-shadow 0.3s ease; }
+        .card-hover:hover { transform: translateY(-5px); box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1); }
+        .btn-primary { background: linear-gradient(135deg, #3b82f6 0%, #6366f1 100%); transition: all 0.3s ease; }
+        .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 10px 15px -3px rgba(59, 130, 246, 0.3); }
+        .feature-icon { background: linear-gradient(135deg, rgba(59, 130, 246, 0.1) 0%, rgba(139, 92, 246, 0.1) 100%); }
+        .industry-tag { transition: all 0.2s; }
+        .industry-tag:hover { transform: scale(1.05); }
+        .drop-zone { border: 2px dashed #cbd5e0; transition: all 0.3s; }
+        .drop-zone.active { border-color: #4f46e5; background-color: #eff6ff; }
+    </style>
+</head>
+<body class="bg-gray-50">
+
+<!-- ======================================== -->
+<!-- USER DASHBOARD (Hidden by default) -->
+<!-- ======================================== -->
+<div id="user-dashboard" class="hidden">
+    <nav class="bg-white shadow-sm sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center h-16">
+                <a href="/" class="flex items-center gap-2">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745v-6.51A23.931 23.931 0 0112 9c3.183 0 6.22.62 9 1.745v6.51z"></path>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold text-gray-900">AffiliateMediaHub</span>
+                        <span class="text-xl font-bold gradient-text">-Studio</span>
+                    </div>
+                </a>
+                <div class="flex items-center gap-4">
+                    <button onclick="window.netlifyIdentity.logout()" class="bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300">
+                        Sign Out
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div class="flex justify-between items-center mb-8">
+            <h1 class="text-3xl font-bold text-gray-900">Welcome back, <span id="dashboard-user-name">User</span>!</h1>
+        </div>
+
+        <!-- Resume Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <div class="flex justify-between items-center mb-4">
+                <h2 class="text-xl font-semibold text-gray-900">Your Resumes</h2>
+                <button onclick="document.querySelector('form[name=resume-upload]').scrollIntoView()" 
+                        class="bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700">
+                    + Upload Resume
+                </button>
+            </div>
+            <div id="resume-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-gray-500 text-center">Upload your first resume to get started</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Applications Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6 mb-8">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Your Applications</h2>
+            <div id="applications-list" class="space-y-4">
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <p class="text-gray-500 text-center">Your applications will appear here</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Job Matches Section -->
+        <div class="bg-white rounded-xl shadow-sm p-6">
+            <h2 class="text-xl font-semibold text-gray-900 mb-4">Recommended Jobs</h2>
+            <div id="job-matches" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+        </div>
+    </div>
+</div>
+
+<!-- ======================================== -->
+<!-- PUBLIC SITE CONTENT -->
+<!-- ======================================== -->
+<div id="public-site">
+
+<!-- Navigation -->
+<nav class="bg-white shadow-sm sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between items-center h-16">
+            <a href="/" class="flex items-center gap-2">
+                <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg flex items-center justify-center">
+                    <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745v-6.51A23.931 23.931 0 0112 9c3.183 0 6.22.62 9 1.745v6.51z"></path>
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
+                    </svg>
+                </div>
+                <div>
+                    <span class="text-xl font-bold text-gray-900">AffiliateMediaHub</span>
+                    <span class="text-xl font-bold gradient-text">-Studio</span>
+                </div>
+            </a>
+            
+            <div class="hidden md:flex items-center gap-8">
+                <a href="#features" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Features</a>
+                <a href="#how-it-works" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">How It Works</a>
+                <a href="#industries" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Industries</a>
+                <a href="#pricing" class="text-gray-600 hover:text-blue-600 font-medium transition-colors">Pricing</a>
+            </div>
+            
+            <div class="hidden md:flex items-center gap-4">
+                <a href="#upload" class="bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium hover:bg-blue-700">Get Started</a>
+                <button onclick="window.netlifyIdentity.open()" class="bg-white border border-blue-600 text-blue-600 px-5 py-2.5 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                    Sign In / Register
+                </button>
+            </div>
+            
+            <button class="md:hidden p-2 rounded-lg hover:bg-gray-100" onclick="toggleMobileMenu()">
+                <svg class="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            </button>
+        </div>
+        
+        <div id="mobileMenu" class="hidden md:hidden bg-white border-t">
+            <div class="px-4 py-4 space-y-3">
+                <a href="#features" class="block text-gray-600 hover:text-blue-600 font-medium">Features</a>
+                <a href="#how-it-works" class="block text-gray-600 hover:text-blue-600 font-medium">How It Works</a>
+                <a href="#industries" class="block text-gray-600 hover:text-blue-600 font-medium">Industries</a>
+                <a href="#pricing" class="block text-gray-600 hover:text-blue-600 font-medium">Pricing</a>
+                <a href="#upload" class="block bg-blue-600 text-white px-5 py-2.5 rounded-lg font-medium text-center">Get Started</a>
+                <button onclick="window.netlifyIdentity.open()" class="w-full bg-white border border-blue-600 text-blue-600 px-5 py-2.5 rounded-lg font-medium hover:bg-blue-50 transition-colors">
+                    Sign In / Register
+                </button>
+            </div>
+        </div>
+    </div>
+</nav>
+
+<!-- Hero Section -->
+<section class="hero-pattern py-20 lg:py-28">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-6">
+            <span class="w-2 h-2 bg-blue-600 rounded-full animate-pulse"></span>
+            AI-Powered Job Matching for ANY Career
+        </div>
+        
+        <h1 class="text-4xl md:text-5xl lg:text-6xl font-extrabold text-gray-900 mb-6 leading-tight">
+            Find Your Perfect Job Match<br>
+            <span class="gradient-text">No Matter Your Industry</span>
+        </h1>
+        
+        <p class="text-xl text-gray-600 max-w-4xl mx-auto mb-8 leading-relaxed">
+            Whether you're in AI, Sales, Construction, Office Work, Management, Cybersecurity, 
+            or any other field - upload your resumes and let our AI find the best opportunities for YOU.
+        </p>
+        
+        <div class="flex flex-col sm:flex-row gap-4 justify-center mb-12">
+            <a href="#upload" class="bg-blue-600 hover:bg-blue-700 text-white px-8 py-4 rounded-lg font-semibold text-lg transition-colors">
+                📄 Upload Your Resumes
+            </a>
+            <a href="#how-it-works" class="border-2 border-blue-600 text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-blue-50 transition-colors">
+                See How It Works →
+            </a>
+        </div>
+        
+        <div class="flex flex-wrap justify-center gap-3 mb-8">
+            <span class="industry-tag bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 shadow-sm">AI & Machine Learning</span>
+            <span class="industry-tag bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 shadow-sm">Sales & Marketing</span>
+            <span class="industry-tag bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 shadow-sm">Construction</span>
+            <span class="industry-tag bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 shadow-sm">Office & Admin</span>
+            <span class="industry-tag bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 shadow-sm">Management</span>
+            <span class="industry-tag bg-white px-4 py-2 rounded-full text-sm font-medium text-gray-700 shadow-sm">Cybersecurity</span>
+        </div>
+        
+        <div class="flex flex-wrap justify-center gap-8 text-gray-500">
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span>Millions of Job Titles Supported</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span>100+ Job Boards Searched</span>
+            </div>
+            <div class="flex items-center gap-2">
+                <svg class="w-5 h-5 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>
+                <span>All Data Saved on Website</span>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Industries Section -->
+<section id="industries" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                🏢 All Industries
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Works for <span class="gradient-text">Every Career Path</span>
+            </h2>
+            <p class="text-gray-600 max-w-3xl mx-auto">
+                From entry-level to executive, from traditional to cutting-edge - our AI adapts to YOUR career goals
+            </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+                <div class="w-14 h-14 bg-blue-100 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-7 h-7 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Technology & AI</h3>
+                <ul class="space-y-2 text-gray-600 text-sm">
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>AI Engineer</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Machine Learning Specialist</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Data Scientist</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Software Developer</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Cybersecurity Analyst</li>
+                </ul>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+                <div class="w-14 h-14 bg-green-100 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-7 h-7 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745v-6.51A23.931 23.931 0 0112 9c3.183 0 6.22.62 9 1.745v6.51z"></path><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Business & Sales</h3>
+                <ul class="space-y-2 text-gray-600 text-sm">
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Sales Representative</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Account Manager</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Marketing Manager</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Business Development</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>CEO / Executive</li>
+                </ul>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+                <div class="w-14 h-14 bg-orange-100 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Construction & Trade</h3>
+                <ul class="space-y-2 text-gray-600 text-sm">
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Construction Manager</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Electrician</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Plumber</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>HVAC Technician</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-orange-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Carpenter</li>
+                </ul>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-6 card-hover border border-gray-100">
+                <div class="w-14 h-14 bg-purple-100 rounded-xl flex items-center justify-center mb-4">
+                    <svg class="w-7 h-7 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                </div>
+                <h3 class="text-lg font-bold text-gray-900 mb-3">Office & Administration</h3>
+                <ul class="space-y-2 text-gray-600 text-sm">
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Administrative Assistant</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Office Manager</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Receptionist</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Data Entry Clerk</li>
+                    <li class="flex items-center gap-2"><svg class="w-4 h-4 text-purple-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>Executive Assistant</li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+<!-- Upload Section -->
+<section id="upload" class="py-20 bg-gradient-to-br from-blue-50 to-purple-50">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-12">
+            <div class="inline-flex items-center gap-2 bg-blue-600 text-white px-4 py-2 rounded-full text-sm font-medium mb-4">
+                📄 Ready to Start?
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Upload Your Resumes for ANY Job Title
+            </h2>
+            <p class="text-gray-600 max-w-3xl mx-auto">
+                Whether you're looking for an AI Engineer position, Sales Manager role, Construction job, 
+                Office Administrator position, CEO opportunity, or any other career - upload up to 3 resumes 
+                and our AI will find the perfect matches for YOU.
+            </p>
+        </div>
+
+        <!-- Netlify Resume Upload Form -->
+        <form name="resume-upload" netlify netlify-honeypot="bot-field" class="bg-white rounded-2xl shadow-lg p-8">
+            <input type="hidden" name="form-name" value="resume-upload" />
+            <input type="hidden" name="user-id" id="user-id" />
+            <input type="hidden" name="user-email" id="user-email" />
+            
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Information</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Full Name *</label>
+                        <input type="text" id="name" name="name" required 
+                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="Your full name">
+                    </div>
+                    <div>
+                        <label for="email" class="block text-sm font-medium text-gray-700 mb-2">Email Address *</label>
+                        <input type="email" id="email" name="email" required 
+                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="your@email.com">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="phone" class="block text-sm font-medium text-gray-700 mb-2">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" 
+                           class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                           placeholder="(555) 123-4567">
+                </div>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Upload Your Resumes (Up to 3)</h3>
+                <p class="text-gray-500 text-sm mb-4">
+                    Upload any combination of resumes. Our AI will analyze all of them to find the best job matches 
+                    for your unique skills and experience, regardless of industry or job title.
+                </p>
+                
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                        <input type="file" id="resume1" name="resume1" accept=".pdf,.doc,.docx,.txt" 
+                               class="hidden" onchange="updateFileName(1, this)">
+                        <label for="resume1" class="cursor-pointer">
+                            <svg class="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                            </svg>
+                            <span class="text-sm text-gray-600">Click to upload</span>
+                            <p class="text-xs text-gray-500 mt-1">PDF, DOC, DOCX, TXT</p>
+                            <p class="text-xs text-gray-400 mt-1" id="fileName1">No file chosen</p>
+                        </label>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                        <input type="file" id="resume2" name="resume2" accept=".pdf,.doc,.docx,.txt" 
+                               class="hidden" onchange="updateFileName(2, this)">
+                        <label for="resume2" class="cursor-pointer">
+                            <svg class="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                            </svg>
+                            <span class="text-sm text-gray-600">Click to upload</span>
+                            <p class="text-xs text-gray-500 mt-1">PDF, DOC, DOCX, TXT</p>
+                            <p class="text-xs text-gray-400 mt-1" id="fileName2">No file chosen</p>
+                        </label>
+                    </div>
+                    
+                    <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center cursor-pointer hover:border-blue-500 transition-colors">
+                        <input type="file" id="resume3" name="resume3" accept=".pdf,.doc,.docx,.txt" 
+                               class="hidden" onchange="updateFileName(3, this)">
+                        <label for="resume3" class="cursor-pointer">
+                            <svg class="w-8 h-8 text-blue-600 mx-auto mb-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M9 19l3 3m0 0l3-3m-3 3V10"></path>
+                            </svg>
+                            <span class="text-sm text-gray-600">Click to upload</span>
+                            <p class="text-xs text-gray-500 mt-1">PDF, DOC, DOCX, TXT</p>
+                            <p class="text-xs text-gray-400 mt-1" id="fileName3">No file chosen</p>
+                        </label>
+                    </div>
+                </div>
+                <p class="text-sm text-gray-500 mt-4 text-center">Max file size: 5MB each</p>
+            </div>
+
+            <div class="mb-6">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Your Job Preferences</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="jobTitle" class="block text-sm font-medium text-gray-700 mb-2">Desired Job Title(s) *</label>
+                        <input type="text" id="jobTitle" name="job-title" required 
+                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="e.g., AI Engineer, Sales Manager">
+                        <p class="text-xs text-gray-500 mt-1">Separate multiple titles with commas</p>
+                    </div>
+                    <div>
+                        <label for="location" class="block text-sm font-medium text-gray-700 mb-2">Preferred Location(s)</label>
+                        <input type="text" id="location" name="location" 
+                               class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                               placeholder="e.g., Orange, TX or Remote">
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="industry" class="block text-sm font-medium text-gray-700 mb-2">Industry/Field</label>
+                    <select id="industry" name="industry" 
+                            class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                        <option value="">Select your industry (optional)</option>
+                        <option value="technology">Technology & AI</option>
+                        <option value="business">Business & Sales</option>
+                        <option value="construction">Construction & Trade</option>
+                        <option value="office">Office & Administration</option>
+                        <option value="healthcare">Healthcare</option>
+                        <option value="engineering">Engineering</option>
+                        <option value="finance">Finance & Accounting</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="mb-8">
+                <h3 class="text-lg font-semibold text-gray-900 mb-4">Additional Details</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label for="experience" class="block text-sm font-medium text-gray-700 mb-2">Years of Experience</label>
+                        <select id="experience" name="experience" 
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="">Select experience level</option>
+                            <option value="entry">Entry Level (0-2 years)</option>
+                            <option value="mid">Mid-Level (3-7 years)</option>
+                            <option value="senior">Senior (8-15 years)</option>
+                            <option value="executive">Executive (15+ years)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label for="workType" class="block text-sm font-medium text-gray-700 mb-2">Preferred Work Type</label>
+                        <select id="workType" name="work-type" 
+                                class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
+                            <option value="">Any type</option>
+                            <option value="full-time">Full-Time</option>
+                            <option value="part-time">Part-Time</option>
+                            <option value="contract">Contract</option>
+                            <option value="remote">Remote</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="mt-4">
+                    <label for="notes" class="block text-sm font-medium text-gray-700 mb-2">Special Requirements or Notes</label>
+                    <textarea id="notes" name="notes" rows="3" 
+                              class="w-full border border-gray-300 rounded-lg px-4 py-3 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors resize-none"
+                              placeholder="e.g., Must have flexible hours, Looking for leadership roles, etc."></textarea>
+                </div>
+            </div>
+
+            <button type="submit" 
+                    class="w-full bg-blue-600 hover:bg-blue-700 text-white py-4 rounded-lg font-semibold text-lg transition-colors">
+                📤 Upload & Find My Jobs
+            </button>
+            
+            <p class="text-xs text-gray-500 text-center mt-4">
+                Powered by <strong>AffiliateMediaHub-Studio</strong> | All data saved securely on this website
+            </p>
+        </form>
+
+        <!-- Netlify Job Application Form (Hidden) -->
+        <form name="job-application" netlify netlify-honeypot="bot-field" class="hidden bg-white rounded-2xl shadow-lg p-8 mt-8">
+            <input type="hidden" name="form-name" value="job-application" />
+            <input type="hidden" name="user-id" id="app-user-id" />
+            <input type="hidden" name="user-email" id="app-user-email" />
+            <input type="hidden" name="job-id" id="job-id" />
+            <input type="hidden" name="job-title" id="job-title" />
+            <input type="hidden" name="company" id="company" />
+            
+            <h3 class="text-xl font-semibold text-gray-900 mb-4">Apply to Job</h3>
+            <p class="text-gray-600 mb-6">Applying to: <strong id="app-job-display"></strong></p>
+            
+            <div class="mb-6">
+                <label for="cover-letter" class="block text-sm font-medium text-gray-700 mb-2">Cover Letter (Optional)</label>
+                <textarea id="cover-letter" name="cover-letter" rows="4" 
+                          class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
+                          placeholder="Tell us why you're a great fit for this role..."></textarea>
+            </div>
+            
+            <div class="flex gap-4">
+                <button type="submit" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-3 rounded-lg font-semibold transition-colors">
+                    Submit Application
+                </button>
+                <button type="button" onclick="cancelApplication()" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-semibold hover:bg-gray-50 transition-colors">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
+</section>
+
+<!-- How It Works -->
+<section id="how-it-works" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                📋 Simple Process
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                How It Works
+            </h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                Our 3-step process adapts to YOUR unique career path
+            </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-gray-50 rounded-2xl p-8 h-full">
+                <div class="w-16 h-16 bg-blue-600 rounded-full flex items-center justify-center mb-6">
+                    <span class="text-2xl font-bold text-white">1</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Sign In or Register</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Create your free account with Netlify Identity. All your data stays securely on this website.
+                </p>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-8 h-full">
+                <div class="w-16 h-16 bg-purple-600 rounded-full flex items-center justify-center mb-6">
+                    <span class="text-2xl font-bold text-white">2</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Upload Your Resumes</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    Upload up to 3 resumes. Our AI extracts your job titles, skills, and experience to find perfect matches.
+                </p>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-8 h-full">
+                <div class="w-16 h-16 bg-green-600 rounded-full flex items-center justify-center mb-6">
+                    <span class="text-2xl font-bold text-white">3</span>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3">Apply to Jobs</h3>
+                <p class="text-gray-600 leading-relaxed">
+                    View your matched jobs, track applications, and apply with custom cover letters - all from your dashboard.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section id="features" class="py-20 bg-gray-50">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                ✨ Powerful Features
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Works for <span class="gradient-text">Every Career Path</span>
+            </h2>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-white rounded-2xl p-6 card-hover border border-gray-100">
+                <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">User Accounts</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Secure user registration and login. All your resumes and applications stay in your private dashboard.
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 card-hover border border-gray-100">
+                <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">AI-Powered Matching</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Our AI analyzes your resumes to find jobs matching your skills and experience across all industries.
+                </p>
+            </div>
+            <div class="bg-white rounded-2xl p-6 card-hover border border-gray-100">
+                <div class="feature-icon w-16 h-16 rounded-xl flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4"></path></svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-900 mb-3 text-center">Application Tracking</h3>
+                <p class="text-gray-600 text-center leading-relaxed">
+                    Track all your applications in one place. See status, dates, and follow up easily.
+                </p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Pricing Section -->
+<section id="pricing" class="py-20 bg-white">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="text-center mb-16">
+            <div class="inline-flex items-center gap-2 bg-blue-100 text-blue-800 px-4 py-2 rounded-full text-sm font-medium mb-4">
+                💰 Simple Pricing
+            </div>
+            <h2 class="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                Choose Your Plan
+            </h2>
+            <p class="text-gray-600 max-w-2xl mx-auto">
+                No contracts. Cancel anytime. PayPal integration coming soon.
+            </p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
+            <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+                <div class="text-center mb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Free</h3>
+                    <p class="text-gray-600 mb-4">Get started</p>
+                    <div class="mb-2"><span class="text-4xl font-bold text-gray-900">$0</span><span class="text-gray-600">/month</span></div>
+                </div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">1 resume upload</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">5 job matches</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Basic tracking</span></li>
+                </ul>
+                <button class="w-full border-2 border-blue-600 text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">Get Started Free</button>
+            </div>
+            <div class="bg-blue-600 rounded-2xl p-8 text-white relative">
+                <div class="absolute top-0 -translate-y-1/2 left-1/2 -translate-x-1/2"><span class="bg-blue-800 text-white px-4 py-1 rounded-full text-sm font-medium">Most Popular</span></div>
+                <div class="text-center mb-8">
+                    <h3 class="text-xl font-bold mb-2">Pro</h3>
+                    <p class="text-blue-100 mb-4">Full features</p>
+                    <div class="mb-2"><span class="text-4xl font-bold">$9.99</span><span class="text-blue-200">/month</span></div>
+                </div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Up to 3 resumes</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>20+ job matches</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Custom cover letters</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span>Application tracking</span></li>
+                </ul>
+                <button class="w-full bg-white text-blue-600 py-3 rounded-lg font-semibold hover:bg-gray-100 transition-colors">Upgrade to Pro - Coming Soon</button>
+            </div>
+            <div class="bg-gray-50 rounded-2xl p-8 border border-gray-200">
+                <div class="text-center mb-8">
+                    <h3 class="text-xl font-bold text-gray-900 mb-2">Premium</h3>
+                    <p class="text-gray-600 mb-4">For power users</p>
+                    <div class="mb-2"><span class="text-4xl font-bold text-gray-900">$19.99</span><span class="text-gray-600">/month</span></div>
+                </div>
+                <ul class="space-y-4 mb-8">
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Unlimited resumes</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">50+ job matches</span></li>
+                    <li class="flex items-center gap-3"><svg class="w-5 h-5 text-green-500 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg><span class="text-gray-700">Priority support</span></li>
+                </ul>
+                <button class="w-full border-2 border-blue-600 text-blue-600 py-3 rounded-lg font-semibold hover:bg-blue-50 transition-colors">Get Premium - Coming Soon</button>
+            </div>
+        </div>
+        <p class="text-center text-gray-500 text-sm mt-8">PayPal integration coming soon from AffiliateMediaHub-Studio</p>
+    </div>
+</section>
+
+<!-- CTA Section -->
+<section class="py-20 bg-gradient-to-r from-blue-600 to-purple-600">
+    <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <h2 class="text-3xl md:text-4xl font-bold text-white mb-4">Ready to Find Your Perfect Job?</h2>
+        <p class="text-xl text-blue-100 mb-8 max-w-2xl mx-auto">
+            Sign in to upload your resumes and let our AI find the best opportunities for YOU.
+        </p>
+        <button onclick="window.netlifyIdentity.open()" class="inline-flex items-center justify-center bg-white text-blue-600 px-8 py-4 rounded-lg font-semibold text-lg hover:bg-gray-100 transition-colors">
+            🔐 Sign In / Register Free
+        </button>
+    </div>
+</section>
+
+<!-- Footer -->
+<footer class="bg-gray-900 text-white py-12">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-8 mb-8">
+            <div>
+                <a href="/" class="flex items-center gap-2 mb-4">
+                    <div class="w-10 h-10 bg-gradient-to-br from-blue-600 to-purple-700 rounded-lg flex items-center justify-center">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745v-6.51A23.931 23.931 0 0112 9c3.183 0 6.22.62 9 1.745v6.51z"></path>
+                        </svg>
+                    </div>
+                    <div>
+                        <span class="text-xl font-bold">AffiliateMediaHub</span>
+                        <span class="text-xl font-bold gradient-text">-Studio</span>
+                    </div>
+                </a>
+                <p class="text-gray-400 text-sm">AI-Powered job matching for ANY career path. All data saved securely on this website.</p>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white mb-4">Quick Links</h4>
+                <ul class="space-y-2">
+                    <li><a href="#features" class="text-gray-400 hover:text-white transition-colors">Features</a></li>
+                    <li><a href="#how-it-works" class="text-gray-400 hover:text-white transition-colors">How It Works</a></li>
+                    <li><a href="#pricing" class="text-gray-400 hover:text-white transition-colors">Pricing</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white mb-4">Resources</h4>
+                <ul class="space-y-2">
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Resume Tips</a></li>
+                    <li><a href="#" class="text-gray-400 hover:text-white transition-colors">Interview Prep</a></li>
+                </ul>
+            </div>
+            <div>
+                <h4 class="font-semibold text-white mb-4">Contact</h4>
+                <ul class="space-y-2">
+                    <li class="flex items-center gap-2">
+                        <svg class="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"></path></svg>
+                        <a href="mailto:affiliatemediahub@gmail.com" class="text-gray-400 hover:text-white transition-colors">affiliatemediahub@gmail.com</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="border-t border-gray-800 pt-8 text-center">
+            <p class="text-gray-400 text-sm">&copy; 2026 <strong>AffiliateMediaHub-Studio</strong>. All rights reserved.</p>
+        </div>
+    </div>
+</footer>
+
+</div> <!-- End public-site -->
+
+<!-- ======================================== -->
+<!-- JAVASCRIPT -->
+<!-- ======================================== -->
+<script>
+// Mobile menu toggle
+function toggleMobileMenu() {
+    const menu = document.getElementById('mobileMenu');
+    menu.classList.toggle('hidden');
+}
+
+// Update file name display
+function updateFileName(index, input) {
+    const fileNameElement = document.getElementById('fileName' + index);
+    if (input.files.length > 0) {
+        let name = input.files[0].name;
+        if (name.length > 15) {
+            name = name.substring(0, 12) + '...' + name.substring(name.lastIndexOf('.'));
+        }
+        fileNameElement.textContent = name;
+        fileNameElement.classList.remove('text-gray-400');
+        fileNameElement.classList.add('text-blue-600');
+    } else {
+        fileNameElement.textContent = 'No file chosen';
+        fileNameElement.classList.remove('text-blue-600');
+        fileNameElement.classList.add('text-gray-400');
+    }
+}
+
+// Cancel application
+function cancelApplication() {
+    document.querySelector('form[name=job-application]').classList.add('hidden');
+    document.querySelector('form[name=resume-upload]').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Smooth scrolling for anchor links
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+        const target = document.querySelector(this.getAttribute('href'));
+        if (target) {
+            target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    });
+});
+
+// ============================================
+// NETLIFY IDENTITY + FORMS INTEGRATION
+// ============================================
+
+if (window.netlifyIdentity) {
+    window.netlifyIdentity.on("init", user => {
+        updateUserUI(user);
+    });
+
+    window.netlifyIdentity.on("login", user => {
+        updateUserUI(user);
+        loadUserData();
+    });
+
+    window.netlifyIdentity.on("logout", () => {
+        updateUserUI(null);
+    });
+
+    window.netlifyIdentity.init();
+}
+
+// Update UI based on user
+function updateUserUI(user) {
+    if (user) {
+        // Hide public site, show dashboard
+        document.getElementById('public-site').classList.add('hidden');
+        document.getElementById('user-dashboard').classList.remove('hidden');
+        document.getElementById('dashboard-user-name').textContent = user.email || user.user_metadata.full_name || 'User';
+        
+        // Set user info in forms
+        const userId = user.id || user.sub;
+        const userEmail = user.email || '';
+        
+        document.getElementById('user-id').value = userId;
+        document.getElementById('user-email').value = userEmail;
+        document.getElementById('app-user-id').value = userId;
+        document.getElementById('app-user-email').value = userEmail;
+        
+        // Load user data
+        loadUserData();
+    } else {
+        // Show public site, hide dashboard
+        document.getElementById('user-dashboard').classList.add('hidden');
+        document.getElementById('public-site').classList.remove('hidden');
+    }
+}
+
+// Load user data from Netlify Forms (via localStorage for demo)
+async function loadUserData() {
+    try {
+        // In production, you would fetch from Netlify Functions API
+        // For now, we use localStorage to simulate
+        const resumes = JSON.parse(localStorage.getItem('netlifyResumes') || '[]');
+        const apps = JSON.parse(localStorage.getItem('netlifyApps') || '[]');
+        
+        // Filter by current user
+        const userId = document.getElementById('user-id')?.value || '';
+        const userResumes = resumes.filter(r => r['user-id'] === userId);
+        const userApps = apps.filter(a => a['user-id'] === userId);
+
+        // Show resumes
+        const resumeList = document.getElementById('resume-list');
+        if (userResumes.length > 0) {
+            resumeList.innerHTML = userResumes.map(r => `
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-900">${r['file-name'] || r.file || 'Resume'}</h3>
+                    <p class="text-sm text-gray-600 mt-1">${r['job-title'] || 'No title specified'}</p>
+                    <p class="text-xs text-gray-500 mt-1">${new Date(r.timestamp).toLocaleDateString()}</p>
+                </div>
+            `).join('');
+        } else {
+            resumeList.innerHTML = '<div class="bg-gray-50 rounded-lg p-4"><p class="text-gray-500 text-center">Upload your first resume to get started</p></div>';
+        }
+
+        // Show applications
+        const appsList = document.getElementById('applications-list');
+        if (userApps.length > 0) {
+            appsList.innerHTML = userApps.map(a => `
+                <div class="bg-gray-50 rounded-lg p-4">
+                    <h3 class="font-semibold text-gray-900">${a['job-title'] || 'Untitled Job'}</h3>
+                    <p class="text-sm text-gray-600">${a.company || 'Unknown Company'}</p>
+                    <p class="text-xs text-gray-500">${new Date(a.timestamp).toLocaleDateString()}</p>
+                </div>
+            `).join('');
+        } else {
+            appsList.innerHTML = '<div class="bg-gray-50 rounded-lg p-4"><p class="text-gray-500 text-center">Your applications will appear here</p></div>';
+        }
+
+        // Show job matches based on first resume
+        const firstResume = userResumes[0];
+        const jobTitle = firstResume?.['job-title'] || 'Warehouse Operator';
+        showJobMatches(jobTitle);
+
+    } catch (error) {
+        console.error('Error loading data:', error);
+    }
+}
+
+// Show job matches based on job title
+function showJobMatches(jobTitle) {
+    const jobMatches = document.getElementById('job-matches');
+    
+    // Sample job data - in production, this would come from your job search API
+    const mockJobs = [
+        { id: '1', title: 'Lead Operator', company: 'ExxonMobil', location: 'Beaumont, TX', salary: '$28-35/hr', url: 'https://corporate.exxonmobil.com/careers' },
+        { id: '2', title: 'Warehouse Supervisor', company: 'Arkema Inc.', location: 'Port Arthur, TX', salary: '$30-38/hr', url: 'https://careers.arkema.com' },
+        { id: '3', title: 'Process Operator', company: 'Dow Chemical', location: 'Orange, TX', salary: '$25-32/hr', url: 'https://corporate.dow.com/careers' },
+        { id: '4', title: 'Production Warehouse Operator', company: 'Lion Elastomers', location: 'Orange, TX', salary: '$22-28/hr', url: 'https://careers.lionelastomers.com' },
+        { id: '5', title: 'Warehouse Lead', company: 'Sam\'s Club', location: 'Beaumont, TX', salary: '$18-22/hr', url: 'https://careers.walmart.com/samsclub' },
+        { id: '6', title: 'Chemical Plant Operator', company: 'BASF', location: 'Port Arthur, TX', salary: '$30-40/hr', url: 'https://careers.basf.com' }
+    ];
+
+    jobMatches.innerHTML = mockJobs.map(job => `
+        <div class="bg-white p-4 rounded-lg shadow-sm hover:shadow-md transition-shadow">
+            <h3 class="font-semibold text-gray-900">${job.title}</h3>
+            <p class="text-gray-600">${job.company}</p>
+            <p class="text-sm text-gray-500">${job.location}</p>
+            <p class="text-sm text-blue-600 font-semibold mt-2">${job.salary}</p>
+            <button onclick="applyToJob('${job.id}', '${job.title.replace(/'/g, "\\'")}', '${job.company.replace(/'/g, "\\'")}')"
+                    class="mt-3 w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                Apply Now
+            </button>
+        </div>
+    `).join('');
+}
+
+// Apply to a job
+function applyToJob(jobId, jobTitle, company) {
+    document.getElementById('job-id').value = jobId;
+    document.getElementById('job-title').value = jobTitle;
+    document.getElementById('company').value = company;
+    document.getElementById('app-job-display').textContent = `${jobTitle} at ${company}`;
+    document.querySelector('form[name=job-application]').classList.remove('hidden');
+    document.querySelector('form[name=job-application]').scrollIntoView({ behavior: 'smooth' });
+}
+
+// Handle form submissions
+document.addEventListener('DOMContentLoaded', function() {
+    const forms = document.querySelectorAll('form[netlify]');
+    
+    forms.forEach(form => {
+        form.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const formData = new FormData(form);
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+
+            // For demo, save to localStorage
+            // In production, Netlify Forms will save this automatically
+            if (form.name === 'resume-upload') {
+                const resumes = JSON.parse(localStorage.getItem('netlifyResumes') || '[]');
+                resumes.push({ ...data, timestamp: new Date().toISOString() });
+                localStorage.setItem('netlifyResumes', JSON.stringify(resumes));
+                alert('✅ Resume uploaded! Check your dashboard.');
+            } else if (form.name === 'job-application') {
+                const apps = JSON.parse(localStorage.getItem('netlifyApps') || '[]');
+                apps.push({ ...data, timestamp: new Date().toISOString() });
+                localStorage.setItem('netlifyApps', JSON.stringify(apps));
+                alert('✅ Application submitted! Check your dashboard.');
+            }
+
+            // Reset form
+            form.reset();
+            
+            // Hide application form
+            if (form.name === 'job-application') {
+                form.classList.add('hidden');
+            }
+
+            // Reload user data
+            loadUserData();
+        });
+    });
+
+    // Check user on load
+    if (window.netlifyIdentity) {
+        const user = window.netlifyIdentity.currentUser();
+        updateUserUI(user);
+    }
+});
+</script>
+</body>
+</html>
